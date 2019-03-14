@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.dao.UserDAO">
+	
+	
+	<!-- 회원가입  -->
+	<insert id="insert" parameterType="com.test.vo.UserVO">
+		insert into mvcboarduser (userId, userName, userPassword, userEmail)
+		values (#{userId}, #{userName}, #{userPassword}, #{userEmail})
+	</insert> 
+	
+	<!-- 로그인체크 -->
+	<select id="selectById" parameterType="String" resultType="com.test.vo.UserVO">
+		select * from mvcboarduser where userId=#{userId}
+	</select>
+
+	<select id="selectByIdCount" parameterType="String" resultType="int">
+		select count(*) from mvcboarduser where userId=#{userId}
+	</select>
+
+	
+</mapper>

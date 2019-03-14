@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.dao.BoardDAO">
+
+	<!-- 테이블에 저장된 데이터 개수출력 -->
+	<select id="selectCount" resultType="int">
+		select count(*) from mvcboard
+	</select>
+	
+	<!-- 한 페이지 가져오기-->
+	<select id="selectList" parameterType="java.util.HashMap" resultType="com.test.vo.MvcBoardVO" >
+	<![CDATA[
+		select * from(	
+			select rownum rnum, TT.* from(
+				select * from mvcboard order by ref desc, seq asc
+			)TT where rownum <= #{endNo}
+		)where rnum >= #{startNo}
+        
+	]]>
+	</select>
+	
+	
+	<!-- 글 한 건 가져오기 -->
+	<select id="selectByIdx" parameterType="int" resultType="com.test.vo.MvcBoardVO">
+		select * from mvcboard where idx=#{idx}
+	</select>
+	
+	<!-- 글 한 건 저장하기 -->
+	<insert id="insert" parameterType="com.test.vo.MvcBoardVO">
+		insert into mvcboard(idx, name, subject, content, ref, lev, seq )
+		values(mvcboard_idx_seq.nextval, #{name}, #{subject}, #{content}, mvcboard_idx_seq.currval, 0, 0)
+	</insert>
+	
+	<!-- 글 한건 삭제하기 -->
+	<delete id="delete" parameterType="int">
+		delete from mvcboard where idx = #{idx}
+	</delete>
+	
+	<!-- 글 한건 수정하기 -->
+	<update id="update" parameterType="com.test.vo.MvcBoardVO">
+		update mvcboard set  subject = #{subject}, content = #{content} where idx = #{idx}
+	</update>
+	
+	<!-- 조회수를 증가 -->
+	<update id="increment" parameterType="int">
+		update mvcboard set hit=hit +1 where idx=#{idx}
+	</update>
+	
+	
+	<!--코멘트 전체 가져오기 -->
+	<select id="selectCommentList" parameterType="int" resultType="com.test.vo.MvcBoardCommentVO">
+		select * from mvcboardcomment where idx=#{idx} order by idx desc
+	</select>
+
+	<!--코멘트 개수 가져오기 -->
+	<select id="commentCount" parameterType="int" resultType="int">
+		select count(*) from mvcboardcomment where idx=#{idx}
+	</select>
+
+	<!-- 코멘트 한 건 추가 -->
+	<insert id="commentinsert" parameterType="com.test.vo.MvcBoardCommentVO">
+		insert into mvcboardcomment(commentIdx, idx, commentName, commentId, commentContent , commentRef , commentLev, commentSeq) 
+		values(mvcboardcomment_idx_seq.nextval,#{idx}, #{commentName}, #{commentId}, #{commentContent}, mvcboardcomment_idx_seq.currval, 0, 0)
+	</insert>
+	
+	<!--코멘트 한 건 삭제하기 -->
+	<select id="commentdelete" parameterType="int">
+		delete from mvcboardcomment where commentIdx=#{commentIdx}
+	</select>
+	
+	<select id="selectCountMulti" parameterType="java.util.HashMap" resultType="int">
+		select count(*) from mvcboard where 
+		<if test="category=='작성자'">
+			<![CDATA[
+			name like '%'||#{item}||'%'
+			]]>
+		</if>
+		<if test="category=='제목'">
+			<![CDATA[
+			subject like '%'||#{item}||'%'
+			]]>
+		</if>
+	</select>
+
+	<!-- 테이블에서 카테고리 별 검색어가 포함된 한 페이지 분량의 글을 얻어온다. -->
+	<select id="selectListMulti" parameterType="com.test.vo.CategoryVO" resultType="com.test.vo.MvcBoardVO">
+			select * from (
+				select rownum rnum, GG.* from (
+					select * from mvcboard where 
+						<if test="category=='작성자'">
+							<![CDATA[
+							name like '%'||#{item}||'%'
+							]]>
+						</if>
+						<if test="category=='제목'">
+							<![CDATA[
+							subject like '%'||#{item}||'%'
+							]]>
+						</if>			
+					order by idx desc
+		<![CDATA[
+				) GG where rownum <= #{endNo}
+			) where rnum >= #{startNo}
+		]]>
+	</select>
+	
+</mapper>
