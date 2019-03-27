@@ -16,8 +16,9 @@
 
 
 <script type="text/javascript">
-	//아이디 체크여부 확인 (아이디 중복일 경우 = 0 , 중복이 아닐경우 = 1 )
 
+
+//아이디 체크여부 확인 (아이디 중복일 경우 = 0 , 중복이 아닐경우 = 1 )
 function check(id){
 	
 	alert(id);
@@ -75,6 +76,9 @@ $(function(){
 
 
 </script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/fwk_common.js"></script>
+
+
 
 </head>
 <body >

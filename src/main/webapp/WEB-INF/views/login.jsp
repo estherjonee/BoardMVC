@@ -57,7 +57,7 @@ $(document).ready(function(){
 </tr>
 
 <tr align="center">
-	<td><a href="user/join"><font size="2">회원가입</font></a></td>
+	<td><a href="user/join"><font size="2">회원가입</font></a> / <a href="inputVal_guide"><font size="2">valcheck</font></a></td>
 </tr>
 </table>
 </form>

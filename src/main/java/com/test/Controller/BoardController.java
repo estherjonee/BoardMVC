@@ -1,5 +1,6 @@
 package com.test.Controller;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -48,6 +49,9 @@ public class BoardController {
 		return "login";
 	}
 	
+	
+	
+	
 	//mybatis mapper bean 자동으로 읽어오기
 	@Autowired
 	public SqlSession sqlSession;
@@ -55,6 +59,15 @@ public class BoardController {
 	// 클래스 경로에 있는 xml설정파일 load (스프링 컨테이너 구동)
 	AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:applicationCTX.xml");
 
+	
+	
+	@RequestMapping("inputVal_guide")
+	public String valcheck(HttpServletRequest request, Model model) {
+		
+		logger.info("★BoardController의 valcheck메소드");
+		
+		return "inputVal_guide";
+	}
 	
 	/**************
 	 * 	글 쓰기 화면
@@ -291,14 +304,24 @@ public class BoardController {
 	 * 	글 한건 삭제
 	 * *************/
 	@RequestMapping("/board/delete")
-	public String delete(HttpServletRequest request, Model model) {
+	public String delete(HttpServletRequest request, Model model,HttpServletResponse response) throws IOException {
 		System.out.println("★BoardController의 delete메소드");
 
 
 		BoardDAO mapper = sqlSession.getMapper(BoardDAO.class);
 		int idx = Integer.parseInt(request.getParameter("idx"));
-		mapper.delete(idx);
+		
+		int commentCount  = mapper.commentCount(idx);
+		
+		response.setContentType("text/html ; charset=UTF-8");
+		PrintWriter out = response.getWriter();
 
+		if(commentCount <= 0 ) {
+		mapper.delete(idx);
+		}else {
+			out.println("<script> alert('댓글이 존재합니다. 그래도 삭제 하시겠습니가?'); history.go(-1); </script>");
+			
+		}
 		model.addAttribute("currentPage", Integer.parseInt(request.getParameter("currentPage")));
 
 		return "redirect:list";
